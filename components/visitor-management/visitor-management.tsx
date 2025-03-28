@@ -3,20 +3,31 @@
 import { useState } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 import { UsersTab } from "./users-tab"
 import { VisitorsTab } from "./visitors-tab"
 import { AppointmentsTab } from "./appointments-tab"
 import { VisitorLogsTab } from "./visitor-logs-tab"
+import { useVisitorManagementViewModel } from "@/lib/view-models/visitor-management-view-model"
 
 export function VisitorManagement() {
   const [activeTab, setActiveTab] = useState("users")
+  const { isLoading, error, users, visitors, visitorLogs, appointments, refreshData } = useVisitorManagementViewModel()
 
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight">Visitor Management</h1>
+        <h1 className="text-lg font-semibold tracking-tight">Visitor Management</h1>
         <p className="text-muted-foreground">Manage users, visitors, appointments, and visitor logs.</p>
       </div>
+
+      {error && (
+        <Card className="bg-destructive/10 border-destructive/20">
+          <CardContent className="p-3">
+            <p className="text-sm text-destructive">Error loading visitor management data. Please try refreshing.</p>
+          </CardContent>
+        </Card>
+      )}
 
       <Tabs defaultValue="users" className="space-y-4">
         <TabsList>
@@ -33,7 +44,14 @@ export function VisitorManagement() {
               <CardDescription>Manage user accounts with details like name, role, and department.</CardDescription>
             </CardHeader>
             <CardContent>
-              <UsersTab />
+              {isLoading ? (
+                <div className="space-y-4">
+                  <Skeleton className="h-10 w-full max-w-sm" />
+                  <Skeleton className="h-[400px] w-full" />
+                </div>
+              ) : (
+                <UsersTab users={users || []} />
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -45,7 +63,14 @@ export function VisitorManagement() {
               <CardDescription>Maintain a database with visitor details.</CardDescription>
             </CardHeader>
             <CardContent>
-              <VisitorsTab />
+              {isLoading ? (
+                <div className="space-y-4">
+                  <Skeleton className="h-10 w-full max-w-sm" />
+                  <Skeleton className="h-[400px] w-full" />
+                </div>
+              ) : (
+                <VisitorsTab visitors={visitors || []} />
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -57,7 +82,14 @@ export function VisitorManagement() {
               <CardDescription>Create, view, and manage visitor appointments.</CardDescription>
             </CardHeader>
             <CardContent>
-              <AppointmentsTab />
+              {isLoading ? (
+                <div className="space-y-4">
+                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-[400px] w-full" />
+                </div>
+              ) : (
+                <AppointmentsTab appointments={appointments || []} />
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -69,7 +101,14 @@ export function VisitorManagement() {
               <CardDescription>Track visitor entries and exits with timestamps and entry methods.</CardDescription>
             </CardHeader>
             <CardContent>
-              <VisitorLogsTab />
+              {isLoading ? (
+                <div className="space-y-4">
+                  <Skeleton className="h-10 w-full max-w-sm" />
+                  <Skeleton className="h-[400px] w-full" />
+                </div>
+              ) : (
+                <VisitorLogsTab logs={visitorLogs || []} />
+              )}
             </CardContent>
           </Card>
         </TabsContent>

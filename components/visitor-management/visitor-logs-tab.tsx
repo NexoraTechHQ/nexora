@@ -16,72 +16,18 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Search, MoreHorizontal, Calendar, Download } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import type { VisitorLog } from "@/lib/types/models"
 
-// Mock data for visitor logs
-const visitorLogs = [
-  {
-    id: "L001",
-    visitorName: "Sarah Johnson",
-    visitorEmail: "sarah.j@example.com",
-    hostName: "Michael Brown",
-    department: "Marketing",
-    checkInTime: "2023-11-22 10:30:00",
-    checkOutTime: "2023-11-22 11:45:00",
-    entryMethod: "Manual",
-    status: "completed",
-  },
-  {
-    id: "L002",
-    visitorName: "David Wilson",
-    visitorEmail: "david.w@example.com",
-    hostName: "Emma Davis",
-    department: "Finance",
-    checkInTime: "2023-11-22 11:15:00",
-    checkOutTime: null,
-    entryMethod: "Facial Recognition",
-    status: "active",
-  },
-  {
-    id: "L003",
-    visitorName: "Jennifer Lee",
-    visitorEmail: "jennifer.l@example.com",
-    hostName: "Robert Taylor",
-    department: "HR",
-    checkInTime: "2023-11-21 09:45:00",
-    checkOutTime: "2023-11-21 10:30:00",
-    entryMethod: "Manual",
-    status: "completed",
-  },
-  {
-    id: "L004",
-    visitorName: "Thomas Moore",
-    visitorEmail: "thomas.m@example.com",
-    hostName: "Patricia White",
-    department: "IT",
-    checkInTime: "2023-11-21 13:30:00",
-    checkOutTime: null,
-    entryMethod: "Facial Recognition",
-    status: "active",
-  },
-  {
-    id: "L005",
-    visitorName: "Rebecca Clark",
-    visitorEmail: "rebecca.c@example.com",
-    hostName: "James Anderson",
-    department: "Sales",
-    checkInTime: "2023-11-20 14:00:00",
-    checkOutTime: "2023-11-20 15:15:00",
-    entryMethod: "Manual",
-    status: "completed",
-  },
-]
+interface VisitorLogsTabProps {
+  logs?: VisitorLog[]
+}
 
-export function VisitorLogsTab() {
+export function VisitorLogsTab({ logs = [] }: VisitorLogsTabProps) {
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("all")
   const [entryMethodFilter, setEntryMethodFilter] = useState<string>("all")
 
-  const filteredLogs = visitorLogs.filter((log) => {
+  const filteredLogs = logs.filter((log) => {
     // Apply search filter
     const matchesSearch =
       log.visitorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -104,13 +50,13 @@ export function VisitorLogsTab() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative w-full sm:max-w-xs">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
           <Input
             type="search"
             placeholder="Search logs..."
-            className="w-full pl-8"
+            className="w-full h-8 pl-7 text-sm"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -118,34 +64,46 @@ export function VisitorLogsTab() {
 
         <div className="flex flex-wrap gap-2">
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[130px]">
+            <SelectTrigger className="w-[120px] h-8 text-sm font-normal">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="active">Active</SelectItem>
-              <SelectItem value="completed">Completed</SelectItem>
+              <SelectItem value="all" className="text-sm font-normal">
+                All Status
+              </SelectItem>
+              <SelectItem value="active" className="text-sm font-normal">
+                Active
+              </SelectItem>
+              <SelectItem value="completed" className="text-sm font-normal">
+                Completed
+              </SelectItem>
             </SelectContent>
           </Select>
 
           <Select value={entryMethodFilter} onValueChange={setEntryMethodFilter}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[150px] h-8 text-sm font-normal">
               <SelectValue placeholder="Entry Method" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Methods</SelectItem>
-              <SelectItem value="manual">Manual</SelectItem>
-              <SelectItem value="facial recognition">Facial Recognition</SelectItem>
+              <SelectItem value="all" className="text-sm font-normal">
+                All Methods
+              </SelectItem>
+              <SelectItem value="manual" className="text-sm font-normal">
+                Manual
+              </SelectItem>
+              <SelectItem value="facial recognition" className="text-sm font-normal">
+                Facial Recognition
+              </SelectItem>
             </SelectContent>
           </Select>
 
-          <Button variant="outline" className="gap-1">
-            <Calendar className="h-4 w-4" />
+          <Button variant="outline" size="sm" className="h-8 text-sm gap-1 px-3 py-0 font-normal">
+            <Calendar className="h-3.5 w-3.5" />
             Date Range
           </Button>
 
-          <Button variant="outline" className="gap-1">
-            <Download className="h-4 w-4" />
+          <Button variant="outline" size="sm" className="h-8 text-sm gap-1 px-3 py-0 font-normal">
+            <Download className="h-3.5 w-3.5" />
             Export
           </Button>
         </div>
@@ -154,26 +112,26 @@ export function VisitorLogsTab() {
       <div className="rounded-md border">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead>Visitor</TableHead>
-              <TableHead>Host</TableHead>
-              <TableHead>Department</TableHead>
-              <TableHead>Check In</TableHead>
-              <TableHead>Check Out</TableHead>
-              <TableHead>Entry Method</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="w-[80px]">Actions</TableHead>
+            <TableRow className="hover:bg-transparent">
+              <TableHead className="text-xs font-semibold">Visitor</TableHead>
+              <TableHead className="text-xs font-semibold">Host</TableHead>
+              <TableHead className="text-xs font-semibold">Department</TableHead>
+              <TableHead className="text-xs font-semibold">Check In</TableHead>
+              <TableHead className="text-xs font-semibold">Check Out</TableHead>
+              <TableHead className="text-xs font-semibold">Entry Method</TableHead>
+              <TableHead className="text-xs font-semibold">Status</TableHead>
+              <TableHead className="w-[70px] text-xs font-semibold">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredLogs.length > 0 ? (
               filteredLogs.map((log) => (
-                <TableRow key={log.id}>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src={`/placeholder.svg?height=32&width=32`} alt={log.visitorName} />
-                        <AvatarFallback>
+                <TableRow key={log.id} className="text-xs">
+                  <TableCell className="py-2">
+                    <div className="flex items-center gap-2">
+                      <Avatar className="h-6 w-6">
+                        <AvatarImage src={`/placeholder.svg?height=24&width=24`} alt={log.visitorName} />
+                        <AvatarFallback className="text-xs">
                           {log.visitorName
                             .split(" ")
                             .map((n) => n[0])
@@ -181,35 +139,42 @@ export function VisitorLogsTab() {
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex flex-col">
-                        <span className="font-medium">{log.visitorName}</span>
+                        <span className="font-medium text-sm">{log.visitorName}</span>
                         <span className="text-xs text-muted-foreground">{log.visitorEmail}</span>
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell>{log.hostName}</TableCell>
-                  <TableCell>{log.department}</TableCell>
-                  <TableCell>{new Date(log.checkInTime).toLocaleString()}</TableCell>
-                  <TableCell>{log.checkOutTime ? new Date(log.checkOutTime).toLocaleString() : "—"}</TableCell>
-                  <TableCell>{log.entryMethod}</TableCell>
-                  <TableCell>
-                    <Badge variant={log.status === "active" ? "default" : "secondary"}>
+                  <TableCell className="py-2 text-sm">{log.hostName}</TableCell>
+                  <TableCell className="py-2 text-sm">{log.department}</TableCell>
+                  <TableCell className="py-2 text-xs">{new Date(log.checkInTime).toLocaleString()}</TableCell>
+                  <TableCell className="py-2 text-xs">
+                    {log.checkOutTime ? new Date(log.checkOutTime).toLocaleString() : "—"}
+                  </TableCell>
+                  <TableCell className="py-2 text-sm">{log.entryMethod}</TableCell>
+                  <TableCell className="py-2">
+                    <Badge
+                      variant={log.status === "active" ? "default" : "secondary"}
+                      className="text-xs px-1.5 py-0 font-normal"
+                    >
                       {log.status === "active" ? "Active" : "Completed"}
                     </Badge>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="py-2">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreHorizontal className="h-4 w-4" />
+                        <Button variant="ghost" size="icon" className="h-6 w-6">
+                          <MoreHorizontal className="h-3.5 w-3.5" />
                           <span className="sr-only">Open menu</span>
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem>View details</DropdownMenuItem>
-                        {log.status === "active" && <DropdownMenuItem>Check out visitor</DropdownMenuItem>}
+                      <DropdownMenuContent align="end" className="w-[160px]">
+                        <DropdownMenuLabel className="text-xs font-semibold">Actions</DropdownMenuLabel>
+                        <DropdownMenuItem className="text-sm font-normal">View details</DropdownMenuItem>
+                        {log.status === "active" && (
+                          <DropdownMenuItem className="text-sm font-normal">Check out visitor</DropdownMenuItem>
+                        )}
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>Edit record</DropdownMenuItem>
+                        <DropdownMenuItem className="text-sm font-normal">Edit record</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
@@ -217,7 +182,7 @@ export function VisitorLogsTab() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={8} className="h-24 text-center">
+                <TableCell colSpan={8} className="h-20 text-center text-xs">
                   No visitor logs found.
                 </TableCell>
               </TableRow>

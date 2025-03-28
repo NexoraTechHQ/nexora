@@ -1,74 +1,17 @@
 "use client"
 
 import { useState } from "react"
-import { format, addDays, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay } from "date-fns"
+import { format, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay } from "date-fns"
 import { cn } from "@/lib/utils"
+import type { Appointment } from "@/lib/types/models"
 
 interface AppointmentCalendarProps {
   date: Date
   view: "day" | "week" | "month"
+  appointments?: Appointment[]
 }
 
-// Mock data for appointments
-const appointments = [
-  {
-    id: "A001",
-    visitorName: "Emily Parker",
-    visitorEmail: "emily.p@example.com",
-    hostName: "John Smith",
-    date: new Date(),
-    startTime: "14:30", // 2:30 PM
-    endTime: "15:30", // 3:30 PM
-    location: "Conference Room A",
-    purpose: "Interview",
-  },
-  {
-    id: "A002",
-    visitorName: "Alex Rodriguez",
-    visitorEmail: "alex.r@example.com",
-    hostName: "Lisa Johnson",
-    date: new Date(),
-    startTime: "15:00", // 3:00 PM
-    endTime: "16:00", // 4:00 PM
-    location: "Meeting Room 2",
-    purpose: "Client Meeting",
-  },
-  {
-    id: "A003",
-    visitorName: "Sophia Williams",
-    visitorEmail: "sophia.w@example.com",
-    hostName: "David Chen",
-    date: new Date(),
-    startTime: "16:15", // 4:15 PM
-    endTime: "17:00", // 5:00 PM
-    location: "Office 305",
-    purpose: "Contract Signing",
-  },
-  {
-    id: "A004",
-    visitorName: "Marcus Lee",
-    visitorEmail: "marcus.l@example.com",
-    hostName: "Sarah Thompson",
-    date: addDays(new Date(), 1),
-    startTime: "10:00", // 10:00 AM
-    endTime: "11:30", // 11:30 AM
-    location: "Conference Room B",
-    purpose: "Project Discussion",
-  },
-  {
-    id: "A005",
-    visitorName: "Rachel Green",
-    visitorEmail: "rachel.g@example.com",
-    hostName: "Michael Brown",
-    date: addDays(new Date(), 2),
-    startTime: "13:00", // 1:00 PM
-    endTime: "14:00", // 2:00 PM
-    location: "Meeting Room 1",
-    purpose: "Vendor Meeting",
-  },
-]
-
-export function AppointmentCalendar({ date, view }: AppointmentCalendarProps) {
+export function AppointmentCalendar({ date, view, appointments = [] }: AppointmentCalendarProps) {
   const [selectedAppointment, setSelectedAppointment] = useState<string | null>(null)
 
   // Generate time slots for the day view (9 AM to 6 PM)
@@ -90,18 +33,18 @@ export function AppointmentCalendar({ date, view }: AppointmentCalendarProps) {
   // Render day view
   const renderDayView = () => (
     <div className="flex flex-col">
-      <div className="text-center py-2 font-medium border-b">{format(date, "EEEE, MMMM d, yyyy")}</div>
-      <div className="grid grid-cols-[100px_1fr] h-[600px] overflow-auto">
+      <div className="text-center py-1.5 font-medium border-b text-sm">{format(date, "EEEE, MMMM d, yyyy")}</div>
+      <div className="grid grid-cols-[80px_1fr] h-[500px] overflow-auto">
         <div className="border-r">
           {timeSlots.map((time, index) => (
-            <div key={index} className="h-20 border-b p-2 text-xs text-muted-foreground">
+            <div key={index} className="h-16 border-b p-1.5 text-xs text-muted-foreground">
               {time}
             </div>
           ))}
         </div>
         <div className="relative">
           {timeSlots.map((_, index) => (
-            <div key={index} className="h-20 border-b"></div>
+            <div key={index} className="h-16 border-b"></div>
           ))}
 
           {getAppointmentsForDate(date).map((appointment) => {
@@ -109,16 +52,16 @@ export function AppointmentCalendar({ date, view }: AppointmentCalendarProps) {
             const [startHour, startMinute] = appointment.startTime.split(":").map(Number)
             const [endHour, endMinute] = appointment.endTime.split(":").map(Number)
 
-            const startPosition = (startHour - 9) * 80 + (startMinute / 60) * 80
-            const duration = (((endHour - startHour) * 60 + (endMinute - startMinute)) / 60) * 80
+            const startPosition = (startHour - 9) * 64 + (startMinute / 60) * 64
+            const duration = (((endHour - startHour) * 60 + (endMinute - startMinute)) / 60) * 64
 
             return (
               <div
                 key={appointment.id}
                 className={cn(
-                  "absolute left-1 right-1 rounded-md p-2 text-xs",
+                  "absolute left-1 right-1 rounded-md p-1.5 text-xs",
                   "bg-primary/10 border border-primary/20 hover:bg-primary/20 cursor-pointer",
-                  selectedAppointment === appointment.id && "ring-2 ring-primary",
+                  selectedAppointment === appointment.id && "ring-1 ring-primary",
                 )}
                 style={{
                   top: `${startPosition}px`,
@@ -126,12 +69,12 @@ export function AppointmentCalendar({ date, view }: AppointmentCalendarProps) {
                 }}
                 onClick={() => setSelectedAppointment(selectedAppointment === appointment.id ? null : appointment.id)}
               >
-                <div className="font-medium">{appointment.visitorName}</div>
-                <div className="text-muted-foreground">
+                <div className="font-medium text-sm">{appointment.visitorName}</div>
+                <div className="text-xs text-muted-foreground">
                   {appointment.startTime} - {appointment.endTime}
                 </div>
                 {selectedAppointment === appointment.id && (
-                  <div className="mt-1 text-xs">
+                  <div className="mt-0.5 text-xs">
                     <div>{appointment.purpose}</div>
                     <div>{appointment.location}</div>
                   </div>
@@ -151,17 +94,20 @@ export function AppointmentCalendar({ date, view }: AppointmentCalendarProps) {
         {weekDays.map((day, index) => (
           <div
             key={index}
-            className={cn("text-center py-2 font-medium", isSameDay(day, new Date()) && "bg-muted rounded-t-md")}
+            className={cn(
+              "text-center py-1.5 font-medium text-sm",
+              isSameDay(day, new Date()) && "bg-muted rounded-t-md",
+            )}
           >
             <div>{format(day, "EEE")}</div>
-            <div className="text-sm">{format(day, "d")}</div>
+            <div className="text-xs">{format(day, "d")}</div>
           </div>
         ))}
       </div>
-      <div className="grid grid-cols-[100px_1fr] h-[600px] overflow-auto">
+      <div className="grid grid-cols-[80px_1fr] h-[500px] overflow-auto">
         <div className="border-r">
           {timeSlots.map((time, index) => (
-            <div key={index} className="h-20 border-b p-2 text-xs text-muted-foreground">
+            <div key={index} className="h-16 border-b p-1.5 text-xs text-muted-foreground">
               {time}
             </div>
           ))}
@@ -170,7 +116,7 @@ export function AppointmentCalendar({ date, view }: AppointmentCalendarProps) {
           {weekDays.map((day, dayIndex) => (
             <div key={dayIndex} className="relative border-r">
               {timeSlots.map((_, timeIndex) => (
-                <div key={timeIndex} className={cn("h-20 border-b", isSameDay(day, new Date()) && "bg-muted/50")}></div>
+                <div key={timeIndex} className={cn("h-16 border-b", isSameDay(day, new Date()) && "bg-muted/50")}></div>
               ))}
 
               {getAppointmentsForDate(day).map((appointment) => {
@@ -178,16 +124,16 @@ export function AppointmentCalendar({ date, view }: AppointmentCalendarProps) {
                 const [startHour, startMinute] = appointment.startTime.split(":").map(Number)
                 const [endHour, endMinute] = appointment.endTime.split(":").map(Number)
 
-                const startPosition = (startHour - 9) * 80 + (startMinute / 60) * 80
-                const duration = (((endHour - startHour) * 60 + (endMinute - startMinute)) / 60) * 80
+                const startPosition = (startHour - 9) * 64 + (startMinute / 60) * 64
+                const duration = (((endHour - startHour) * 60 + (endMinute - startMinute)) / 60) * 64
 
                 return (
                   <div
                     key={appointment.id}
                     className={cn(
-                      "absolute left-1 right-1 rounded-md p-1 text-xs",
+                      "absolute left-0.5 right-0.5 rounded-md p-1 text-xs",
                       "bg-primary/10 border border-primary/20 hover:bg-primary/20 cursor-pointer",
-                      selectedAppointment === appointment.id && "ring-2 ring-primary",
+                      selectedAppointment === appointment.id && "ring-1 ring-primary",
                     )}
                     style={{
                       top: `${startPosition}px`,
@@ -197,8 +143,8 @@ export function AppointmentCalendar({ date, view }: AppointmentCalendarProps) {
                       setSelectedAppointment(selectedAppointment === appointment.id ? null : appointment.id)
                     }
                   >
-                    <div className="font-medium truncate">{appointment.visitorName}</div>
-                    <div className="text-muted-foreground truncate">
+                    <div className="font-medium text-sm truncate">{appointment.visitorName}</div>
+                    <div className="text-xs text-muted-foreground truncate">
                       {appointment.startTime} - {appointment.endTime}
                     </div>
                   </div>
@@ -214,10 +160,10 @@ export function AppointmentCalendar({ date, view }: AppointmentCalendarProps) {
   // Render month view
   const renderMonthView = () => (
     <div className="flex flex-col">
-      <div className="text-center py-2 font-medium border-b">{format(date, "MMMM yyyy")}</div>
-      <div className="grid grid-cols-7 h-[600px]">
+      <div className="text-center py-1.5 font-medium border-b text-sm">{format(date, "MMMM yyyy")}</div>
+      <div className="grid grid-cols-7 h-[500px]">
         {/* Month view implementation would go here */}
-        <div className="col-span-7 flex items-center justify-center h-full text-muted-foreground">
+        <div className="col-span-7 flex items-center justify-center h-full text-sm text-muted-foreground">
           Month view coming soon
         </div>
       </div>

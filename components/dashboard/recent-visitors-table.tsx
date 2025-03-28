@@ -14,62 +14,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import type { VisitorLog } from "@/lib/types/models"
 
-// Mock data for recent visitors
-const recentVisitors = [
-  {
-    id: "V001",
-    name: "Sarah Johnson",
-    email: "sarah.j@example.com",
-    host: "Michael Brown",
-    department: "Marketing",
-    checkIn: "10:30 AM",
-    checkOut: "11:45 AM",
-    status: "completed",
-  },
-  {
-    id: "V002",
-    name: "David Wilson",
-    email: "david.w@example.com",
-    host: "Emma Davis",
-    department: "Finance",
-    checkIn: "11:15 AM",
-    checkOut: null,
-    status: "active",
-  },
-  {
-    id: "V003",
-    name: "Jennifer Lee",
-    email: "jennifer.l@example.com",
-    host: "Robert Taylor",
-    department: "HR",
-    checkIn: "09:45 AM",
-    checkOut: "10:30 AM",
-    status: "completed",
-  },
-  {
-    id: "V004",
-    name: "Thomas Moore",
-    email: "thomas.m@example.com",
-    host: "Patricia White",
-    department: "IT",
-    checkIn: "01:30 PM",
-    checkOut: null,
-    status: "active",
-  },
-  {
-    id: "V005",
-    name: "Rebecca Clark",
-    email: "rebecca.c@example.com",
-    host: "James Anderson",
-    department: "Sales",
-    checkIn: "02:00 PM",
-    checkOut: "03:15 PM",
-    status: "completed",
-  },
-]
+interface RecentVisitorsTableProps {
+  visitors: VisitorLog[]
+}
 
-export function RecentVisitorsTable() {
+export function RecentVisitorsTable({ visitors }: RecentVisitorsTableProps) {
   const [sortColumn, setSortColumn] = useState<string | null>(null)
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc")
 
@@ -83,7 +34,7 @@ export function RecentVisitorsTable() {
   }
 
   // Sort the data based on the current sort column and direction
-  const sortedVisitors = [...recentVisitors].sort((a, b) => {
+  const sortedVisitors = [...visitors].sort((a, b) => {
     if (!sortColumn) return 0
 
     const aValue = a[sortColumn as keyof typeof a]
@@ -108,86 +59,95 @@ export function RecentVisitorsTable() {
             <TableHead>
               <Button
                 variant="ghost"
-                onClick={() => handleSort("host")}
-                className="flex items-center gap-1 p-0 h-auto font-medium"
+                onClick={() => handleSort("hostName")}
+                className="flex items-center gap-1 p-0 h-auto font-medium text-xs"
               >
                 Host
-                <ArrowUpDown className="h-3 w-3" />
+                <ArrowUpDown className="h-2.5 w-2.5" />
               </Button>
             </TableHead>
             <TableHead>
               <Button
                 variant="ghost"
                 onClick={() => handleSort("department")}
-                className="flex items-center gap-1 p-0 h-auto font-medium"
+                className="flex items-center gap-1 p-0 h-auto font-medium text-xs"
               >
                 Department
-                <ArrowUpDown className="h-3 w-3" />
+                <ArrowUpDown className="h-2.5 w-2.5" />
               </Button>
             </TableHead>
             <TableHead>
               <Button
                 variant="ghost"
-                onClick={() => handleSort("checkIn")}
-                className="flex items-center gap-1 p-0 h-auto font-medium"
+                onClick={() => handleSort("checkInTime")}
+                className="flex items-center gap-1 p-0 h-auto font-medium text-xs"
               >
                 Check In
-                <ArrowUpDown className="h-3 w-3" />
+                <ArrowUpDown className="h-2.5 w-2.5" />
               </Button>
             </TableHead>
             <TableHead>
               <Button
                 variant="ghost"
-                onClick={() => handleSort("checkOut")}
-                className="flex items-center gap-1 p-0 h-auto font-medium"
+                onClick={() => handleSort("checkOutTime")}
+                className="flex items-center gap-1 p-0 h-auto font-medium text-xs"
               >
                 Check Out
-                <ArrowUpDown className="h-3 w-3" />
+                <ArrowUpDown className="h-2.5 w-2.5" />
               </Button>
             </TableHead>
             <TableHead>
               <Button
                 variant="ghost"
                 onClick={() => handleSort("status")}
-                className="flex items-center gap-1 p-0 h-auto font-medium"
+                className="flex items-center gap-1 p-0 h-auto font-medium text-xs"
               >
                 Status
-                <ArrowUpDown className="h-3 w-3" />
+                <ArrowUpDown className="h-2.5 w-2.5" />
               </Button>
             </TableHead>
-            <TableHead className="w-[80px]">Actions</TableHead>
+            <TableHead className="w-[60px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {sortedVisitors.map((visitor) => (
-            <TableRow key={visitor.id}>
+            <TableRow key={visitor.id} className="text-xs">
               <TableCell>
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src={`/placeholder.svg?height=32&width=32`} alt={visitor.name} />
-                    <AvatarFallback>
-                      {visitor.name
+                <div className="flex items-center gap-2">
+                  <Avatar className="h-6 w-6">
+                    <AvatarImage src={`/placeholder.svg?height=24&width=24`} alt={visitor.visitorName} />
+                    <AvatarFallback className="text-[10px]">
+                      {visitor.visitorName
                         .split(" ")
                         .map((n) => n[0])
                         .join("")}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col">
-                    <span className="font-medium">{visitor.name}</span>
-                    <span className="text-xs text-muted-foreground">{visitor.email}</span>
+                    <span className="font-medium">{visitor.visitorName}</span>
+                    <span className="text-[10px] text-muted-foreground">{visitor.visitorEmail}</span>
                   </div>
                 </div>
               </TableCell>
-              <TableCell>{visitor.host}</TableCell>
+              <TableCell>{visitor.hostName}</TableCell>
               <TableCell>{visitor.department}</TableCell>
-              <TableCell>{visitor.checkIn}</TableCell>
-              <TableCell>{visitor.checkOut || "—"}</TableCell>
               <TableCell>
-                <Badge variant={visitor.status === "active" ? "default" : "secondary"}>
+                {new Date(visitor.checkInTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+              </TableCell>
+              <TableCell>
+                {visitor.checkOutTime
+                  ? new Date(visitor.checkOutTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+                  : "—"}
+              </TableCell>
+              <TableCell>
+                <Badge
+                  variant={visitor.status === "active" ? "default" : "secondary"}
+                  className="text-[10px] px-1 py-0"
+                >
                   {visitor.status === "active" ? (
-                    <UserCheck className="mr-1 h-3 w-3" />
+                    <UserCheck className="mr-1 h-2.5 w-2.5" />
                   ) : (
-                    <UserX className="mr-1 h-3 w-3" />
+                    <UserX className="mr-1 h-2.5 w-2.5" />
                   )}
                   {visitor.status === "active" ? "Active" : "Completed"}
                 </Badge>
@@ -195,17 +155,17 @@ export function RecentVisitorsTable() {
               <TableCell>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <MoreHorizontal className="h-4 w-4" />
+                    <Button variant="ghost" size="icon" className="h-6 w-6">
+                      <MoreHorizontal className="h-3.5 w-3.5" />
                       <span className="sr-only">Open menu</span>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                    <DropdownMenuItem>View details</DropdownMenuItem>
-                    {visitor.status === "active" && <DropdownMenuItem>Check out</DropdownMenuItem>}
+                  <DropdownMenuContent align="end" className="w-[160px]">
+                    <DropdownMenuLabel className="text-xs">Actions</DropdownMenuLabel>
+                    <DropdownMenuItem className="text-xs">View details</DropdownMenuItem>
+                    {visitor.status === "active" && <DropdownMenuItem className="text-xs">Check out</DropdownMenuItem>}
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem>Edit record</DropdownMenuItem>
+                    <DropdownMenuItem className="text-xs">Edit record</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </TableCell>

@@ -59,3 +59,88 @@
   }
 }
 
+/* Microsoft Fluent UI spacing and layout utilities */
+@layer utilities {
+  .ms-motion-fadeIn {
+    @apply transition-opacity duration-300 ease-in-out;
+  }
+
+  .ms-motion-slideUpIn {
+    @apply transition-all duration-300 ease-out;
+  }
+
+  .ms-depth-4 {
+    @apply shadow-md;
+  }
+
+  .ms-depth-8 {
+    @apply shadow-lg;
+  }
+
+  .ms-depth-16 {
+    @apply shadow-xl;
+  }
+
+  .ms-grid {
+    @apply grid gap-2;
+  }
+
+  .ms-stack-horizontal {
+    @apply flex flex-row items-center;
+  }
+
+  .ms-stack-vertical {
+    @apply flex flex-col;
+  }
+}
+
+/* Microsoft Fluent UI typography */
+@layer components {
+  .ms-fontSize-10 {
+    @apply text-xs;
+  }
+
+  .ms-fontSize-12 {
+    @apply text-xs;
+  }
+
+  .ms-fontSize-14 {
+    @apply text-sm;
+  }
+
+  .ms-fontSize-16 {
+    @apply text-base;
+  }
+
+  .ms-fontSize-18 {
+    @apply text-lg;
+  }
+
+  .ms-fontSize-20 {
+    @apply text-lg;
+  }
+
+  .ms-fontSize-24 {
+    @apply text-xl;
+  }
+
+  .ms-fontWeight-regular {
+    @apply font-normal;
+  }
+
+  .ms-fontWeight-semibold {
+    @apply font-semibold;
+  }
+
+  .ms-fontWeight-bold {
+    @apply font-bold;
+  }
+}
+
+/* Focus styles that match Microsoft's accessibility standards */
+@layer base {
+  :focus-visible {
+    @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-background;
+  }
+}
+

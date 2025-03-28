@@ -7,8 +7,13 @@ import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { format } from "date-fns"
 import { AppointmentCalendar } from "./appointment-calendar"
+import type { Appointment } from "@/lib/types/models"
 
-export function AppointmentsTab() {
+interface AppointmentsTabProps {
+  appointments?: Appointment[]
+}
+
+export function AppointmentsTab({ appointments = [] }: AppointmentsTabProps) {
   const [date, setDate] = useState<Date>(new Date())
   const [calendarView, setCalendarView] = useState<"day" | "week" | "month">("week")
 
@@ -28,15 +33,15 @@ export function AppointmentsTab() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon" onClick={() => navigateCalendar("prev")}>
-            <ChevronLeft className="h-4 w-4" />
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-1">
+          <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => navigateCalendar("prev")}>
+            <ChevronLeft className="h-3.5 w-3.5" />
           </Button>
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="min-w-[200px] justify-start text-left font-normal">
-                <CalendarIcon className="mr-2 h-4 w-4" />
+              <Button variant="outline" className="h-7 min-w-[180px] justify-start text-left font-normal text-sm">
+                <CalendarIcon className="mr-2 h-3.5 w-3.5" />
                 {format(date, "MMMM yyyy")}
               </Button>
             </PopoverTrigger>
@@ -49,20 +54,20 @@ export function AppointmentsTab() {
               />
             </PopoverContent>
           </Popover>
-          <Button variant="outline" size="icon" onClick={() => navigateCalendar("next")}>
-            <ChevronRight className="h-4 w-4" />
+          <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => navigateCalendar("next")}>
+            <ChevronRight className="h-3.5 w-3.5" />
           </Button>
-          <Button variant="ghost" onClick={() => setDate(new Date())}>
+          <Button variant="ghost" size="sm" className="h-7 text-sm font-normal" onClick={() => setDate(new Date())}>
             Today
           </Button>
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="flex items-center rounded-md border p-1">
+          <div className="flex items-center rounded-md border p-0.5">
             <Button
               variant={calendarView === "day" ? "default" : "ghost"}
               size="sm"
-              className="h-8"
+              className="h-7 text-sm font-normal"
               onClick={() => setCalendarView("day")}
             >
               Day
@@ -70,7 +75,7 @@ export function AppointmentsTab() {
             <Button
               variant={calendarView === "week" ? "default" : "ghost"}
               size="sm"
-              className="h-8"
+              className="h-7 text-sm font-normal"
               onClick={() => setCalendarView("week")}
             >
               Week
@@ -78,22 +83,22 @@ export function AppointmentsTab() {
             <Button
               variant={calendarView === "month" ? "default" : "ghost"}
               size="sm"
-              className="h-8"
+              className="h-7 text-sm font-normal"
               onClick={() => setCalendarView("month")}
             >
               Month
             </Button>
           </div>
 
-          <Button className="gap-1">
-            <Plus className="h-4 w-4" />
+          <Button size="sm" className="h-7 text-sm gap-1 px-3 py-0 font-normal">
+            <Plus className="h-3.5 w-3.5" />
             New Appointment
           </Button>
         </div>
       </div>
 
       <div className="rounded-md border">
-        <AppointmentCalendar date={date} view={calendarView} />
+        <AppointmentCalendar date={date} view={calendarView} appointments={appointments} />
       </div>
     </div>
   )

@@ -21,57 +21,57 @@ export function DashboardHeader({ onMenuClick }: HeaderProps) {
   const isMobile = useIsMobile()
 
   return (
-    <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background px-4 md:px-6">
-      <Button variant="ghost" size="icon" onClick={onMenuClick} className="md:hidden">
-        <Menu className="h-5 w-5" />
+    <header className="sticky top-0 z-10 flex h-12 items-center gap-3 border-b bg-background px-3 md:px-4">
+      <Button variant="ghost" size="icon" onClick={onMenuClick} className="h-8 w-8 md:hidden">
+        <Menu className="h-4 w-4" />
         <span className="sr-only">Toggle menu</span>
       </Button>
 
       {!isMobile && (
         <div className="relative w-full max-w-sm">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-2.5 top-2 h-3.5 w-3.5 text-muted-foreground" />
           <Input
             type="search"
             placeholder="Search..."
-            className="w-full bg-background pl-8 md:w-[240px] lg:w-[320px]"
+            className="w-full h-8 bg-background pl-8 md:w-[240px] lg:w-[280px] text-sm"
           />
         </div>
       )}
 
-      <div className="ml-auto flex items-center gap-2">
+      <div className="ml-auto flex items-center gap-1">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="relative">
-              <Bell className="h-5 w-5" />
+            <Button variant="ghost" size="icon" className="relative h-8 w-8">
+              <Bell className="h-4 w-4" />
               <span className="sr-only">Notifications</span>
-              <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-primary"></span>
+              <span className="absolute right-1 top-1 h-1.5 w-1.5 rounded-full bg-primary"></span>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-[320px]">
-            <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+          <DropdownMenuContent align="end" className="w-[280px]">
+            <DropdownMenuLabel className="text-xs font-medium">Notifications</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <div className="max-h-[300px] overflow-auto">
-              <DropdownMenuItem className="cursor-pointer">
+            <div className="max-h-[280px] overflow-auto">
+              <DropdownMenuItem className="cursor-pointer py-2">
                 <div className="flex flex-col gap-1">
-                  <p className="text-sm font-medium">New visitor appointment</p>
+                  <p className="text-xs font-medium">New visitor appointment</p>
                   <p className="text-xs text-muted-foreground">Sarah Johnson at 2:30 PM</p>
                 </div>
               </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer">
+              <DropdownMenuItem className="cursor-pointer py-2">
                 <div className="flex flex-col gap-1">
-                  <p className="text-sm font-medium">Access request approved</p>
+                  <p className="text-xs font-medium">Access request approved</p>
                   <p className="text-xs text-muted-foreground">For Michael Brown</p>
                 </div>
               </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer">
+              <DropdownMenuItem className="cursor-pointer py-2">
                 <div className="flex flex-col gap-1">
-                  <p className="text-sm font-medium">System update completed</p>
+                  <p className="text-xs font-medium">System update completed</p>
                   <p className="text-xs text-muted-foreground">Facial recognition module updated</p>
                 </div>
               </DropdownMenuItem>
             </div>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer justify-center text-primary">
+            <DropdownMenuItem className="cursor-pointer justify-center text-primary text-xs">
               View all notifications
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -80,19 +80,19 @@ export function DashboardHeader({ onMenuClick }: HeaderProps) {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="relative h-8 w-8 rounded-full">
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 text-primary text-xs">
                 JD
               </span>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuContent align="end" className="w-[180px]">
+            <DropdownMenuLabel className="text-xs font-medium">My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Profile</DropdownMenuItem>
-            <DropdownMenuItem>Settings</DropdownMenuItem>
-            <DropdownMenuItem>Support</DropdownMenuItem>
+            <DropdownMenuItem className="text-xs">Profile</DropdownMenuItem>
+            <DropdownMenuItem className="text-xs">Settings</DropdownMenuItem>
+            <DropdownMenuItem className="text-xs">Support</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Log out</DropdownMenuItem>
+            <DropdownMenuItem className="text-xs">Log out</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

@@ -14,57 +14,13 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Search, Plus, MoreHorizontal, Phone, Mail } from "lucide-react"
+import type { Visitor } from "@/lib/types/models"
 
-// Mock data for visitors
-const visitors = [
-  {
-    id: "V001",
-    name: "Sarah Johnson",
-    email: "sarah.j@example.com",
-    phone: "+1 (555) 123-4567",
-    company: "Acme Corp",
-    lastVisit: "2023-10-15",
-    visitCount: 3,
-  },
-  {
-    id: "V002",
-    name: "David Wilson",
-    email: "david.w@example.com",
-    phone: "+1 (555) 234-5678",
-    company: "XYZ Industries",
-    lastVisit: "2023-11-02",
-    visitCount: 1,
-  },
-  {
-    id: "V003",
-    name: "Jennifer Lee",
-    email: "jennifer.l@example.com",
-    phone: "+1 (555) 345-6789",
-    company: "Global Tech",
-    lastVisit: "2023-11-10",
-    visitCount: 5,
-  },
-  {
-    id: "V004",
-    name: "Thomas Moore",
-    email: "thomas.m@example.com",
-    phone: "+1 (555) 456-7890",
-    company: "Innovate Solutions",
-    lastVisit: "2023-11-15",
-    visitCount: 2,
-  },
-  {
-    id: "V005",
-    name: "Rebecca Clark",
-    email: "rebecca.c@example.com",
-    phone: "+1 (555) 567-8901",
-    company: "Future Systems",
-    lastVisit: "2023-11-20",
-    visitCount: 4,
-  },
-]
+interface VisitorsTabProps {
+  visitors?: Visitor[]
+}
 
-export function VisitorsTab() {
+export function VisitorsTab({ visitors = [] }: VisitorsTabProps) {
   const [searchTerm, setSearchTerm] = useState("")
 
   const filteredVisitors = visitors.filter(
@@ -77,19 +33,19 @@ export function VisitorsTab() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative w-full sm:max-w-xs">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
           <Input
             type="search"
             placeholder="Search visitors..."
-            className="w-full pl-8"
+            className="w-full h-8 pl-7 text-sm"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <Button className="gap-1">
-          <Plus className="h-4 w-4" />
+        <Button size="sm" className="h-8 text-sm gap-1 px-3 py-0 font-normal">
+          <Plus className="h-3.5 w-3.5" />
           Add Visitor
         </Button>
       </div>
@@ -97,35 +53,38 @@ export function VisitorsTab() {
       <div className="rounded-md border">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead>Visitor</TableHead>
-              <TableHead>Contact</TableHead>
-              <TableHead>Company</TableHead>
-              <TableHead>Last Visit</TableHead>
-              <TableHead>Visit Count</TableHead>
-              <TableHead className="w-[80px]">Actions</TableHead>
+            <TableRow className="hover:bg-transparent">
+              <TableHead className="text-xs font-semibold">Visitor</TableHead>
+              <TableHead className="text-xs font-semibold">Contact</TableHead>
+              <TableHead className="text-xs font-semibold">Company</TableHead>
+              <TableHead className="text-xs font-semibold">Last Visit</TableHead>
+              <TableHead className="text-xs font-semibold">Visit Count</TableHead>
+              <TableHead className="w-[70px] text-xs font-semibold">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredVisitors.length > 0 ? (
               filteredVisitors.map((visitor) => (
-                <TableRow key={visitor.id}>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src={`/placeholder.svg?height=32&width=32`} alt={visitor.name} />
-                        <AvatarFallback>
+                <TableRow key={visitor.id} className="text-xs">
+                  <TableCell className="py-2">
+                    <div className="flex items-center gap-2">
+                      <Avatar className="h-6 w-6">
+                        <AvatarImage
+                          src={visitor.avatarUrl || `/placeholder.svg?height=24&width=24`}
+                          alt={visitor.name}
+                        />
+                        <AvatarFallback className="text-xs">
                           {visitor.name
                             .split(" ")
                             .map((n) => n[0])
                             .join("")}
                         </AvatarFallback>
                       </Avatar>
-                      <span className="font-medium">{visitor.name}</span>
+                      <span className="font-medium text-sm">{visitor.name}</span>
                     </div>
                   </TableCell>
-                  <TableCell>
-                    <div className="flex flex-col gap-1">
+                  <TableCell className="py-2">
+                    <div className="flex flex-col gap-0.5">
                       <div className="flex items-center text-xs">
                         <Mail className="mr-1 h-3 w-3 text-muted-foreground" />
                         {visitor.email}
@@ -136,24 +95,24 @@ export function VisitorsTab() {
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell>{visitor.company}</TableCell>
-                  <TableCell>{visitor.lastVisit}</TableCell>
-                  <TableCell>{visitor.visitCount}</TableCell>
-                  <TableCell>
+                  <TableCell className="py-2 text-sm">{visitor.company}</TableCell>
+                  <TableCell className="py-2 text-sm">{visitor.lastVisit}</TableCell>
+                  <TableCell className="py-2 text-sm">{visitor.visitCount}</TableCell>
+                  <TableCell className="py-2">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreHorizontal className="h-4 w-4" />
+                        <Button variant="ghost" size="icon" className="h-6 w-6">
+                          <MoreHorizontal className="h-3.5 w-3.5" />
                           <span className="sr-only">Open menu</span>
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem>View details</DropdownMenuItem>
-                        <DropdownMenuItem>Edit visitor</DropdownMenuItem>
-                        <DropdownMenuItem>Create appointment</DropdownMenuItem>
+                      <DropdownMenuContent align="end" className="w-[160px]">
+                        <DropdownMenuLabel className="text-xs font-semibold">Actions</DropdownMenuLabel>
+                        <DropdownMenuItem className="text-sm font-normal">View details</DropdownMenuItem>
+                        <DropdownMenuItem className="text-sm font-normal">Edit visitor</DropdownMenuItem>
+                        <DropdownMenuItem className="text-sm font-normal">Create appointment</DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>View visit history</DropdownMenuItem>
+                        <DropdownMenuItem className="text-sm font-normal">View visit history</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
@@ -161,7 +120,7 @@ export function VisitorsTab() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center">
+                <TableCell colSpan={6} className="h-20 text-center text-xs">
                   No visitors found.
                 </TableCell>
               </TableRow>

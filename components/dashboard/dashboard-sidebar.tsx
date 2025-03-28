@@ -121,45 +121,45 @@ export function DashboardSidebar({ open, onOpenChange }: SidebarProps) {
         return { ...prev, ...newExpandedItems }
       })
     }
-  }, [pathname])
+  }, [pathname, filteredNavItems])
 
   const sidebarContent = (
     <>
-      <div className="flex h-14 items-center border-b px-4">
+      <div className="flex h-12 items-center border-b px-3">
         <Link
           href="/dashboard"
-          className="flex items-center gap-2 font-semibold text-lg text-primary"
+          className="flex items-center gap-2 font-semibold text-sm text-primary"
           onClick={() => isMobile && onOpenChange(false)}
         >
-          <span className="h-6 w-6 rounded-md bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">
+          <span className="h-5 w-5 rounded-md bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">
             N
           </span>
           <span>Nexora</span>
         </Link>
         {isMobile && (
-          <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="ml-auto">
-            <X className="h-5 w-5" />
+          <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="ml-auto h-7 w-7">
+            <X className="h-4 w-4" />
             <span className="sr-only">Close</span>
           </Button>
         )}
       </div>
-      <ScrollArea className="flex-1 px-2 py-4">
-        <nav className="space-y-1">
+      <ScrollArea className="flex-1 px-2 py-3">
+        <nav className="space-y-0.5">
           {filteredNavItems.map((item) => (
-            <div key={item.title} className="space-y-1">
+            <div key={item.title} className="space-y-0.5">
               {item.submenu ? (
                 <>
                   <Button
                     variant="ghost"
-                    className={cn("w-full justify-start", isActive(item) && "bg-muted font-medium")}
+                    className={cn("w-full justify-start h-8 text-xs px-2", isActive(item) && "bg-muted font-medium")}
                     onClick={() => toggleExpand(item.title)}
                   >
-                    <item.icon className="mr-2 h-5 w-5" />
+                    <item.icon className="mr-2 h-4 w-4" />
                     {item.title}
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
+                      width="16"
+                      height="16"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
@@ -167,7 +167,7 @@ export function DashboardSidebar({ open, onOpenChange }: SidebarProps) {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       className={cn(
-                        "ml-auto h-4 w-4 transition-transform",
+                        "ml-auto h-3 w-3 transition-transform",
                         expandedItems[item.title] ? "rotate-180" : "",
                       )}
                     >
@@ -175,13 +175,16 @@ export function DashboardSidebar({ open, onOpenChange }: SidebarProps) {
                     </svg>
                   </Button>
                   {expandedItems[item.title] && (
-                    <div className="ml-6 space-y-1 pt-1">
+                    <div className="ml-5 space-y-0.5 pt-0.5">
                       {item.submenu.map((subItem) => (
                         <Button
                           key={subItem.title}
                           variant="ghost"
                           asChild
-                          className={cn("w-full justify-start", pathname === subItem.href && "bg-muted font-medium")}
+                          className={cn(
+                            "w-full justify-start h-7 text-xs px-2",
+                            pathname === subItem.href && "bg-muted font-medium",
+                          )}
                         >
                           <Link href={subItem.href} onClick={() => isMobile && onOpenChange(false)}>
                             {subItem.title}
@@ -195,10 +198,13 @@ export function DashboardSidebar({ open, onOpenChange }: SidebarProps) {
                 <Button
                   variant="ghost"
                   asChild
-                  className={cn("w-full justify-start", pathname === item.href && "bg-muted font-medium")}
+                  className={cn(
+                    "w-full justify-start h-8 text-xs px-2",
+                    pathname === item.href && "bg-muted font-medium",
+                  )}
                 >
                   <Link href={item.href} onClick={() => isMobile && onOpenChange(false)}>
-                    <item.icon className="mr-2 h-5 w-5" />
+                    <item.icon className="mr-2 h-4 w-4" />
                     {item.title}
                   </Link>
                 </Button>
@@ -207,13 +213,13 @@ export function DashboardSidebar({ open, onOpenChange }: SidebarProps) {
           ))}
         </nav>
       </ScrollArea>
-      <div className="border-t p-4">
-        <div className="flex items-center gap-3">
-          <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-            <span className="font-semibold">JD</span>
+      <div className="border-t p-3">
+        <div className="flex items-center gap-2">
+          <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs">
+            <span className="font-medium">JD</span>
           </div>
           <div>
-            <p className="text-sm font-medium">John Doe</p>
+            <p className="text-xs font-medium">John Doe</p>
             <p className="text-xs text-muted-foreground">Admin</p>
           </div>
         </div>
@@ -225,17 +231,13 @@ export function DashboardSidebar({ open, onOpenChange }: SidebarProps) {
   if (isMobile) {
     return (
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent side="left" className="p-0 w-[280px]">
+        <SheetContent side="left" className="p-0 w-[240px]">
           <div className="flex h-full flex-col">{sidebarContent}</div>
         </SheetContent>
       </Sheet>
     )
   }
 
-  return (
-    <div className={cn("border-r bg-background transition-all duration-300 ease-in-out", open ? "w-[280px]" : "w-0")}>
-      <div className="flex h-full flex-col">{sidebarContent}</div>
-    </div>
-  )
+  return <div className="flex h-full flex-col w-full">{sidebarContent}</div>
 }
 
