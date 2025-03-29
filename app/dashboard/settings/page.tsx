@@ -1,6 +1,7 @@
-import { Settings } from "@/components/settings/settings"
+import { redirect } from "next/navigation"
 
 export default function SettingsPage() {
-  return <Settings />
+  // Redirect to the general settings page by default
+  redirect("/dashboard/settings/profile")
 }
 

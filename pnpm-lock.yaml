@@ -123,7 +123,7 @@ dependencies:
     specifier: 15.1.0
     version: 15.1.0(react-dom@19.1.0)(react@19.1.0)
   next-themes:
-    specifier: ^0.4.4
+    specifier: latest
     version: 0.4.6(react-dom@19.1.0)(react@19.1.0)
   react:
     specifier: ^19
