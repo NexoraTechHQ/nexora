@@ -4,11 +4,12 @@ import type React from "react"
 
 import { useState, useEffect } from "react"
 import { usePathname } from "next/navigation"
-import { DashboardSidebar } from "./dashboard-sidebar"
+import { AppSidebar } from "./app-sidebar"
 import { DashboardHeader } from "./dashboard-header"
 import { AIAssistant } from "../ai-assistant/ai-assistant"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
+import { Sheet, SheetContent } from "@/components/ui/sheet"
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -25,17 +26,22 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen w-full bg-background">
       {/* Sidebar - always visible on desktop, controlled by state on mobile */}
-      <div
-        className={cn(
-          "fixed inset-y-0 z-20 flex-shrink-0 w-[280px] flex-col bg-card border-r transition-transform duration-300 ease-in-out md:sticky md:translate-x-0 md:h-screen",
-          isMobile && !sidebarOpen ? "-translate-x-full" : "translate-x-0",
-        )}
-      >
-        <DashboardSidebar open={sidebarOpen} onOpenChange={setSidebarOpen} />
-      </div>
+      {isMobile ? (
+        <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+          <SheetContent side="left" className="p-0 w-[320px] max-w-full">
+            <div className="h-full overflow-hidden">
+              <AppSidebar />
+            </div>
+          </SheetContent>
+        </Sheet>
+      ) : (
+        <div className="fixed inset-y-0 left-0 z-20 w-[280px] h-screen overflow-hidden">
+          <AppSidebar />
+        </div>
+      )}
 
       {/* Main content area */}
-      <div className="flex flex-1 flex-col w-full md:w-[calc(100%-280px)] md:ml-auto h-screen overflow-hidden">
+      <div className={cn("flex flex-1 flex-col w-full h-screen overflow-hidden", !isMobile && "ml-[280px]")}>
         {/* Fixed header */}
         <DashboardHeader onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
 

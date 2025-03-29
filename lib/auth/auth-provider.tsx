@@ -20,6 +20,7 @@ interface AuthContextType extends AuthState {
   login: (credentials: LoginCredentials) => Promise<void>
   logout: () => void
   clearError: () => void
+  initAuth: () => Promise<void> // Add this line
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -35,49 +36,51 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const pathname = usePathname()
 
   // Initialize auth state from storage
-  useEffect(() => {
-    const initAuth = async () => {
-      try {
-        const { user, tokens, isAuthenticated } = AuthService.initializeAuth()
+  const initAuth = async () => {
+    setState((prev) => ({ ...prev, isLoading: true }))
 
-        setState({
-          user,
-          tokens,
-          isAuthenticated,
-          isLoading: false,
-          error: null,
-        })
+    try {
+      const { user, tokens, isAuthenticated } = AuthService.initializeAuth()
 
-        // If tokens exist but are expired, try to refresh
-        if (tokens && !isAuthenticated) {
-          try {
-            const newTokens = await AuthService.refreshToken()
-            setState((prev) => ({
-              ...prev,
-              tokens: newTokens,
-              isAuthenticated: true,
-            }))
-          } catch (error) {
-            // If refresh fails, clear auth state
-            AuthService.logout()
-            setState({
-              user: null,
-              tokens: null,
-              isAuthenticated: false,
-              isLoading: false,
-              error: null,
-            })
-          }
+      setState({
+        user,
+        tokens,
+        isAuthenticated,
+        isLoading: false,
+        error: null,
+      })
+
+      // If tokens exist but are expired, try to refresh
+      if (tokens && !isAuthenticated) {
+        try {
+          const newTokens = await AuthService.refreshToken()
+          setState((prev) => ({
+            ...prev,
+            tokens: newTokens,
+            isAuthenticated: true,
+          }))
+        } catch (error) {
+          // If refresh fails, clear auth state
+          AuthService.logout()
+          setState({
+            user: null,
+            tokens: null,
+            isAuthenticated: false,
+            isLoading: false,
+            error: null,
+          })
         }
-      } catch (error) {
-        setState((prev) => ({
-          ...prev,
-          isLoading: false,
-          error: "Failed to initialize authentication",
-        }))
       }
+    } catch (error) {
+      setState((prev) => ({
+        ...prev,
+        isLoading: false,
+        error: "Failed to initialize authentication",
+      }))
     }
+  }
 
+  useEffect(() => {
     initAuth()
   }, [])
 
@@ -137,6 +140,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     login,
     logout,
     clearError,
+    initAuth, // Add this to the context
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

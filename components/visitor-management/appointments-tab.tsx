@@ -1,13 +1,15 @@
 "use client"
 
 import { useState } from "react"
-import { CalendarIcon, ChevronLeft, ChevronRight, Plus } from "lucide-react"
+import { CalendarIcon, ChevronLeft, ChevronRight, Plus, Table, CalendarPlus2Icon as CalendarIcon2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { format } from "date-fns"
 import { AppointmentCalendar } from "./appointment-calendar"
+import { AppointmentTable } from "./appointment-table"
 import type { Appointment } from "@/lib/types/models"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 interface AppointmentsTabProps {
   appointments?: Appointment[]
@@ -16,6 +18,7 @@ interface AppointmentsTabProps {
 export function AppointmentsTab({ appointments = [] }: AppointmentsTabProps) {
   const [date, setDate] = useState<Date>(new Date())
   const [calendarView, setCalendarView] = useState<"day" | "week" | "month">("week")
+  const [viewMode, setViewMode] = useState<"table" | "calendar">("table")
 
   const navigateCalendar = (direction: "prev" | "next") => {
     const newDate = new Date(date)
@@ -63,32 +66,48 @@ export function AppointmentsTab({ appointments = [] }: AppointmentsTabProps) {
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="flex items-center rounded-md border p-0.5">
-            <Button
-              variant={calendarView === "day" ? "default" : "ghost"}
-              size="sm"
-              className="h-7 text-sm font-normal"
-              onClick={() => setCalendarView("day")}
-            >
-              Day
-            </Button>
-            <Button
-              variant={calendarView === "week" ? "default" : "ghost"}
-              size="sm"
-              className="h-7 text-sm font-normal"
-              onClick={() => setCalendarView("week")}
-            >
-              Week
-            </Button>
-            <Button
-              variant={calendarView === "month" ? "default" : "ghost"}
-              size="sm"
-              className="h-7 text-sm font-normal"
-              onClick={() => setCalendarView("month")}
-            >
-              Month
-            </Button>
-          </div>
+          {/* View mode toggle */}
+          <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as "table" | "calendar")} className="mr-2">
+            <TabsList className="h-7">
+              <TabsTrigger value="table" className="h-7 px-2 text-xs">
+                <Table className="h-3.5 w-3.5 mr-1" />
+                Table
+              </TabsTrigger>
+              <TabsTrigger value="calendar" className="h-7 px-2 text-xs">
+                <CalendarIcon2 className="h-3.5 w-3.5 mr-1" />
+                Calendar
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+
+          {viewMode === "calendar" && (
+            <div className="flex items-center rounded-md border p-0.5">
+              <Button
+                variant={calendarView === "day" ? "default" : "ghost"}
+                size="sm"
+                className="h-7 text-sm font-normal"
+                onClick={() => setCalendarView("day")}
+              >
+                Day
+              </Button>
+              <Button
+                variant={calendarView === "week" ? "default" : "ghost"}
+                size="sm"
+                className="h-7 text-sm font-normal"
+                onClick={() => setCalendarView("week")}
+              >
+                Week
+              </Button>
+              <Button
+                variant={calendarView === "month" ? "default" : "ghost"}
+                size="sm"
+                className="h-7 text-sm font-normal"
+                onClick={() => setCalendarView("month")}
+              >
+                Month
+              </Button>
+            </div>
+          )}
 
           <Button size="sm" className="h-7 text-sm gap-1 px-3 py-0 font-normal">
             <Plus className="h-3.5 w-3.5" />
@@ -98,7 +117,11 @@ export function AppointmentsTab({ appointments = [] }: AppointmentsTabProps) {
       </div>
 
       <div className="rounded-md border">
-        <AppointmentCalendar date={date} view={calendarView} appointments={appointments} />
+        {viewMode === "calendar" ? (
+          <AppointmentCalendar date={date} view={calendarView} appointments={appointments} />
+        ) : (
+          <AppointmentTable date={date} appointments={appointments} />
+        )}
       </div>
     </div>
   )
