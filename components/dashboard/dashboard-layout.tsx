@@ -27,7 +27,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       {/* Sidebar - always visible on desktop, controlled by state on mobile */}
       <div
         className={cn(
-          "fixed inset-y-0 z-20 flex-shrink-0 w-[240px] flex-col bg-background border-r transition-transform duration-300 ease-in-out md:sticky md:translate-x-0 md:h-screen",
+          "fixed inset-y-0 z-20 flex-shrink-0 w-[280px] flex-col bg-card border-r transition-transform duration-300 ease-in-out md:sticky md:translate-x-0 md:h-screen",
           isMobile && !sidebarOpen ? "-translate-x-full" : "translate-x-0",
         )}
       >
@@ -35,7 +35,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       </div>
 
       {/* Main content area */}
-      <div className="flex flex-1 flex-col w-full md:w-[calc(100%-240px)] md:ml-auto h-screen overflow-hidden">
+      <div className="flex flex-1 flex-col w-full md:w-[calc(100%-280px)] md:ml-auto h-screen overflow-hidden">
         {/* Fixed header */}
         <DashboardHeader onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
 
@@ -45,7 +45,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         )}
 
         {/* Scrollable content area */}
-        <main className="flex-1 overflow-y-auto p-3 md:p-4 h-[calc(100vh-48px)]">{children}</main>
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 h-[calc(100vh-56px)]">{children}</main>
 
         {/* AI Assistant */}
         <AIAssistant />

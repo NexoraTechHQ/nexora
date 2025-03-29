@@ -1,10 +1,16 @@
 import type React from "react"
 import type { Metadata } from "next/types"
-import { Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
+import { AuthProvider } from "@/lib/auth/auth-provider"
 
-const inter = Inter({ subsets: ["latin"] })
+// Replace Inter with Segoe UI (system font) and fallbacks
+const fontFamily = {
+  className: "font-segoe",
+  style: {
+    fontFamily: '"Segoe UI", -apple-system, BlinkMacSystemFont, "Roboto", "Helvetica Neue", sans-serif',
+  },
+}
 
 export const metadata: Metadata = {
   title: "Nexora - Visitor Management System",
@@ -19,9 +25,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} overflow-hidden`}>
+      <body style={fontFamily.style} className="overflow-hidden">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-          {children}
+          <AuthProvider>{children}</AuthProvider>
         </ThemeProvider>
       </body>
     </html>

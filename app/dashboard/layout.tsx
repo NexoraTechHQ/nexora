@@ -1,7 +1,12 @@
 import type React from "react"
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout"
+import { ProtectedRoute } from "@/components/auth/protected-route"
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return <DashboardLayout>{children}</DashboardLayout>
+  return (
+    <ProtectedRoute>
+      <DashboardLayout>{children}</DashboardLayout>
+    </ProtectedRoute>
+  )
 }
 
