@@ -6,7 +6,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { LayoutDashboard, Users, KeyRound, BarChart3, Settings, X } from "lucide-react"
+import { LayoutDashboard, Users, KeyRound, BarChart3, Settings, X, ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
@@ -125,65 +125,57 @@ export function DashboardSidebar({ open, onOpenChange }: SidebarProps) {
 
   const sidebarContent = (
     <>
-      <div className="flex h-12 items-center border-b px-3">
+      <div className="flex h-14 items-center border-b px-4">
         <Link
           href="/dashboard"
-          className="flex items-center gap-2 font-semibold text-sm text-primary"
+          className="flex items-center gap-2 font-semibold text-base text-primary"
           onClick={() => isMobile && onOpenChange(false)}
         >
-          <span className="h-5 w-5 rounded-md bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">
+          <span className="h-6 w-6 rounded-md bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">
             N
           </span>
           <span>Nexora</span>
         </Link>
         {isMobile && (
-          <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="ml-auto h-7 w-7">
+          <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="ml-auto h-8 w-8">
             <X className="h-4 w-4" />
             <span className="sr-only">Close</span>
           </Button>
         )}
       </div>
-      <ScrollArea className="flex-1 px-2 py-3">
-        <nav className="space-y-0.5">
+      <ScrollArea className="flex-1 px-3 py-4">
+        <nav className="space-y-1">
           {filteredNavItems.map((item) => (
-            <div key={item.title} className="space-y-0.5">
+            <div key={item.title} className="space-y-1">
               {item.submenu ? (
                 <>
                   <Button
                     variant="ghost"
-                    className={cn("w-full justify-start h-8 text-xs px-2", isActive(item) && "bg-muted font-medium")}
+                    className={cn(
+                      "w-full justify-start h-9 text-sm px-3 rounded-md",
+                      isActive(item) && "bg-accent font-medium text-accent-foreground",
+                    )}
                     onClick={() => toggleExpand(item.title)}
                   >
                     <item.icon className="mr-2 h-4 w-4" />
-                    {item.title}
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+                    <span>{item.title}</span>
+                    <ChevronDown
                       className={cn(
-                        "ml-auto h-3 w-3 transition-transform",
+                        "ml-auto h-4 w-4 transition-transform",
                         expandedItems[item.title] ? "rotate-180" : "",
                       )}
-                    >
-                      <polyline points="6 9 12 15 18 9" />
-                    </svg>
+                    />
                   </Button>
                   {expandedItems[item.title] && (
-                    <div className="ml-5 space-y-0.5 pt-0.5">
+                    <div className="ml-6 space-y-1 pt-1">
                       {item.submenu.map((subItem) => (
                         <Button
                           key={subItem.title}
                           variant="ghost"
                           asChild
                           className={cn(
-                            "w-full justify-start h-7 text-xs px-2",
-                            pathname === subItem.href && "bg-muted font-medium",
+                            "w-full justify-start h-8 text-sm px-3 rounded-md",
+                            pathname === subItem.href && "bg-accent font-medium text-accent-foreground",
                           )}
                         >
                           <Link href={subItem.href} onClick={() => isMobile && onOpenChange(false)}>
@@ -199,13 +191,13 @@ export function DashboardSidebar({ open, onOpenChange }: SidebarProps) {
                   variant="ghost"
                   asChild
                   className={cn(
-                    "w-full justify-start h-8 text-xs px-2",
-                    pathname === item.href && "bg-muted font-medium",
+                    "w-full justify-start h-9 text-sm px-3 rounded-md",
+                    pathname === item.href && "bg-accent font-medium text-accent-foreground",
                   )}
                 >
                   <Link href={item.href} onClick={() => isMobile && onOpenChange(false)}>
                     <item.icon className="mr-2 h-4 w-4" />
-                    {item.title}
+                    <span>{item.title}</span>
                   </Link>
                 </Button>
               )}
@@ -213,13 +205,13 @@ export function DashboardSidebar({ open, onOpenChange }: SidebarProps) {
           ))}
         </nav>
       </ScrollArea>
-      <div className="border-t p-3">
-        <div className="flex items-center gap-2">
-          <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs">
+      <div className="border-t p-4">
+        <div className="flex items-center gap-3">
+          <div className="h-8 w-8 rounded-md bg-primary/10 flex items-center justify-center text-primary text-sm">
             <span className="font-medium">JD</span>
           </div>
           <div>
-            <p className="text-xs font-medium">John Doe</p>
+            <p className="text-sm font-medium">John Doe</p>
             <p className="text-xs text-muted-foreground">Admin</p>
           </div>
         </div>
@@ -231,7 +223,7 @@ export function DashboardSidebar({ open, onOpenChange }: SidebarProps) {
   if (isMobile) {
     return (
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent side="left" className="p-0 w-[240px]">
+        <SheetContent side="left" className="p-0 w-[280px] border-r">
           <div className="flex h-full flex-col">{sidebarContent}</div>
         </SheetContent>
       </Sheet>
