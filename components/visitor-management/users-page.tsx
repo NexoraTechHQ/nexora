@@ -1,44 +1,71 @@
 "use client"
 
+import { useState } from "react"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Button } from "@/components/ui/button"
+import { RefreshCw } from "lucide-react"
 import { UsersTab } from "./users-tab"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
-import { useVisitorManagementViewModel } from "@/lib/view-models/visitor-management-view-model"
+import { useUserManagement } from "@/hooks/use-user-management"
 
 export function UsersPage() {
-  const { isLoading, error, users } = useVisitorManagementViewModel()
+  const { users, isLoading, fetchUsers } = useUserManagement()
+  const [activeTab, setActiveTab] = useState("all")
+
+  // Filter users based on active tab
+  const filteredUsers = users.filter((user) => {
+    if (activeTab === "all") return true
+    if (activeTab === "active") return user.status === "active"
+    if (activeTab === "inactive") return user.status === "inactive"
+    return true
+  })
+
+  // Count users by status
+  const activeCount = users.filter((user) => user.status === "active").length
+  const inactiveCount = users.filter((user) => user.status === "inactive").length
+
+  // Handle refresh
+  const handleRefresh = () => {
+    fetchUsers()
+  }
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-lg font-semibold tracking-tight">Users</h1>
-        <p className="text-muted-foreground">Manage user accounts with details like name, role, and department.</p>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold">User Management</h2>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleRefresh}
+          className="h-7 text-xs gap-1 px-2 py-0 font-normal"
+          disabled={isLoading}
+        >
+          <RefreshCw className={`h-3 w-3 ${isLoading ? "animate-spin" : ""}`} />
+          Refresh
+        </Button>
       </div>
 
-      {error && (
-        <div className="bg-destructive/10 border border-destructive/20 p-3 rounded-md">
-          <p className="text-sm text-destructive">Error loading user data. Please try refreshing.</p>
-        </div>
-      )}
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base font-semibold">Users Management</CardTitle>
-          <CardDescription className="text-sm">
-            Create, edit, and manage user accounts for your organization.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <div className="space-y-4">
-              <Skeleton className="h-10 w-full max-w-sm" />
-              <Skeleton className="h-[400px] w-full" />
-            </div>
-          ) : (
-            <UsersTab users={users || []} />
-          )}
-        </CardContent>
-      </Card>
+      <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="grid w-full grid-cols-3 h-8">
+          <TabsTrigger value="all" className="text-xs">
+            All Users ({users.length})
+          </TabsTrigger>
+          <TabsTrigger value="active" className="text-xs">
+            Active ({activeCount})
+          </TabsTrigger>
+          <TabsTrigger value="inactive" className="text-xs">
+            Inactive ({inactiveCount})
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="all">
+          <UsersTab users={filteredUsers} onRefresh={handleRefresh} isLoading={isLoading} />
+        </TabsContent>
+        <TabsContent value="active">
+          <UsersTab users={filteredUsers} onRefresh={handleRefresh} isLoading={isLoading} />
+        </TabsContent>
+        <TabsContent value="inactive">
+          <UsersTab users={filteredUsers} onRefresh={handleRefresh} isLoading={isLoading} />
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }

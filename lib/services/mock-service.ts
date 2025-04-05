@@ -51,6 +51,46 @@ const mockUsers: User[] = [
     department: "Operations",
     status: "active",
   },
+  {
+    id: "U006",
+    name: "Emily Davis",
+    email: "emily.davis@nexora.com",
+    role: "manager",
+    department: "Sales",
+    status: "active",
+  },
+  {
+    id: "U007",
+    name: "Robert Wilson",
+    email: "robert.wilson@nexora.com",
+    role: "user",
+    department: "Customer Support",
+    status: "active",
+  },
+  {
+    id: "U008",
+    name: "Jennifer Martinez",
+    email: "jennifer.martinez@nexora.com",
+    role: "manager",
+    department: "Product",
+    status: "active",
+  },
+  {
+    id: "U009",
+    name: "Daniel Taylor",
+    email: "daniel.taylor@nexora.com",
+    role: "user",
+    department: "Legal",
+    status: "inactive",
+  },
+  {
+    id: "U010",
+    name: "Jessica Anderson",
+    email: "jessica.anderson@nexora.com",
+    role: "user",
+    department: "Research",
+    status: "active",
+  },
 ]
 
 const mockVisitors: Visitor[] = [
@@ -357,49 +397,60 @@ const mockAccessStats: AccessStats = {
 export class MockService {
   // Users
   async getUsers(): Promise<User[]> {
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 800))
     return [...mockUsers]
   }
 
   async getUserById(id: string): Promise<User | null> {
+    await new Promise((resolve) => setTimeout(resolve, 500))
     return mockUsers.find((user) => user.id === id) || null
   }
 
   // Visitors
   async getVisitors(): Promise<Visitor[]> {
+    await new Promise((resolve) => setTimeout(resolve, 800))
     return [...mockVisitors]
   }
 
   async getVisitorById(id: string): Promise<Visitor | null> {
+    await new Promise((resolve) => setTimeout(resolve, 500))
     return mockVisitors.find((visitor) => visitor.id === id) || null
   }
 
   // Visitor Logs
   async getVisitorLogs(): Promise<VisitorLog[]> {
+    await new Promise((resolve) => setTimeout(resolve, 800))
     return [...mockVisitorLogs]
   }
 
   // Appointments
   async getAppointments(): Promise<Appointment[]> {
+    await new Promise((resolve) => setTimeout(resolve, 800))
     return [...mockAppointments]
   }
 
   // Access Logs
   async getAccessLogs(): Promise<AccessLog[]> {
+    await new Promise((resolve) => setTimeout(resolve, 800))
     return [...mockAccessLogs]
   }
 
   // Dashboard Stats
   async getDashboardStats(): Promise<DashboardStats> {
+    await new Promise((resolve) => setTimeout(resolve, 800))
     return { ...mockDashboardStats }
   }
 
   // Visitor Stats
   async getVisitorStats(): Promise<VisitorStats> {
+    await new Promise((resolve) => setTimeout(resolve, 800))
     return JSON.parse(JSON.stringify(mockVisitorStats))
   }
 
   // Access Stats
   async getAccessStats(): Promise<AccessStats> {
+    await new Promise((resolve) => setTimeout(resolve, 800))
     return JSON.parse(JSON.stringify(mockAccessStats))
   }
 }

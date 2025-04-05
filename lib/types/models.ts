@@ -38,14 +38,21 @@ export interface VisitorLog {
   status: "active" | "completed"
 }
 
+// Host model for appointments
+export interface Host {
+  id: string
+  name: string
+  email?: string
+  department?: string
+}
+
 // Appointment model
 export interface Appointment {
   id: string
   visitorId: string
   visitorName: string
   visitorEmail: string
-  hostId: string
-  hostName: string
+  hosts: Host[] // Changed from single host to multiple hosts
   date: string
   startTime: string
   endTime: string
