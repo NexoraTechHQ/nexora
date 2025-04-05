@@ -15,15 +15,24 @@ const initialState: AuthState = {
   error: null,
 }
 
+// Create the auth context with default values to prevent undefined errors
+const defaultContextValue = {
+  ...initialState,
+  login: async () => {},
+  logout: () => {},
+  clearError: () => {},
+  initAuth: async () => {},
+}
+
 // Create the auth context
 interface AuthContextType extends AuthState {
   login: (credentials: LoginCredentials) => Promise<void>
   logout: () => void
   clearError: () => void
-  initAuth: () => Promise<void> // Add this line
+  initAuth: () => Promise<void>
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined)
+const AuthContext = createContext<AuthContextType>(defaultContextValue)
 
 // Auth provider props
 interface AuthProviderProps {
@@ -86,7 +95,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   // Redirect to login if not authenticated and not already on login page
   useEffect(() => {
-    if (!state.isLoading && !state.isAuthenticated && pathname !== "/login") {
+    if (
+      !state.isLoading &&
+      !state.isAuthenticated &&
+      pathname !== "/login" &&
+      pathname !== "/register" &&
+      !pathname.startsWith("/auth/")
+    ) {
       router.push("/login")
     }
   }, [state.isLoading, state.isAuthenticated, pathname, router])
@@ -140,7 +155,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     login,
     logout,
     clearError,
-    initAuth, // Add this to the context
+    initAuth,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
@@ -148,12 +163,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
 // Custom hook to use auth context
 export function useAuth() {
-  const context = useContext(AuthContext)
-
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider")
-  }
-
-  return context
+  return useContext(AuthContext)
 }
 
