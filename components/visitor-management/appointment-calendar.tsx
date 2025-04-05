@@ -1,180 +1,156 @@
 "use client"
 
-import { useState } from "react"
-import { format, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay } from "date-fns"
-import { cn } from "@/lib/utils"
+import { useState, useEffect } from "react"
+import {
+  format,
+  startOfWeek,
+  endOfWeek,
+  eachDayOfInterval,
+  isSameDay,
+  startOfMonth,
+  endOfMonth,
+  isSameMonth,
+} from "date-fns"
+import { Skeleton } from "@/components/ui/skeleton"
 import type { Appointment } from "@/lib/types/models"
 
 interface AppointmentCalendarProps {
   date: Date
   view: "day" | "week" | "month"
-  appointments?: Appointment[]
+  appointments: Appointment[]
+  isLoading?: boolean
 }
 
-export function AppointmentCalendar({ date, view, appointments = [] }: AppointmentCalendarProps) {
-  const [selectedAppointment, setSelectedAppointment] = useState<string | null>(null)
+export function AppointmentCalendar({ date, view, appointments, isLoading = false }: AppointmentCalendarProps) {
+  const [calendarDays, setCalendarDays] = useState<Date[]>([])
 
-  // Generate time slots for the day view (9 AM to 6 PM)
-  const timeSlots = Array.from({ length: 10 }, (_, i) => {
-    const hour = i + 9 // Start from 9 AM
-    return `${hour > 12 ? hour - 12 : hour}:00 ${hour >= 12 ? "PM" : "AM"}`
-  })
+  // Update calendar days when date or view changes
+  useEffect(() => {
+    let days: Date[] = []
 
-  // Generate days for the week view
-  const weekStart = startOfWeek(date, { weekStartsOn: 1 }) // Start from Monday
-  const weekEnd = endOfWeek(date, { weekStartsOn: 1 })
-  const weekDays = eachDayOfInterval({ start: weekStart, end: weekEnd })
+    if (view === "day") {
+      days = [date]
+    } else if (view === "week") {
+      const start = startOfWeek(date, { weekStartsOn: 1 }) // Start on Monday
+      const end = endOfWeek(date, { weekStartsOn: 1 })
+      days = eachDayOfInterval({ start, end })
+    } else if (view === "month") {
+      const start = startOfMonth(date)
+      const end = endOfMonth(date)
+      days = eachDayOfInterval({ start, end })
+    }
 
-  // Filter appointments for the selected date
-  const getAppointmentsForDate = (date: Date) => {
-    return appointments.filter((appointment) => isSameDay(new Date(appointment.date), date))
+    setCalendarDays(days)
+  }, [date, view])
+
+  // Filter appointments for a specific day
+  const getAppointmentsForDay = (day: Date) => {
+    return appointments
+      .filter((appointment) => {
+        const appointmentDate = new Date(appointment.date)
+        return isSameDay(appointmentDate, day)
+      })
+      .sort((a, b) => a.startTime.localeCompare(b.startTime))
   }
 
-  // Render day view
-  const renderDayView = () => (
-    <div className="flex flex-col">
-      <div className="text-center py-1.5 font-medium border-b text-sm">{format(date, "EEEE, MMMM d, yyyy")}</div>
-      <div className="grid grid-cols-[80px_1fr] h-[500px] overflow-auto">
-        <div className="border-r">
-          {timeSlots.map((time, index) => (
-            <div key={index} className="h-16 border-b p-1.5 text-xs text-muted-foreground">
-              {time}
-            </div>
-          ))}
-        </div>
-        <div className="relative">
-          {timeSlots.map((_, index) => (
-            <div key={index} className="h-16 border-b"></div>
-          ))}
-
-          {getAppointmentsForDate(date).map((appointment) => {
-            // Calculate position based on start time
-            const [startHour, startMinute] = appointment.startTime.split(":").map(Number)
-            const [endHour, endMinute] = appointment.endTime.split(":").map(Number)
-
-            const startPosition = (startHour - 9) * 64 + (startMinute / 60) * 64
-            const duration = (((endHour - startHour) * 60 + (endMinute - startMinute)) / 60) * 64
-
-            return (
-              <div
-                key={appointment.id}
-                className={cn(
-                  "absolute left-1 right-1 rounded-md p-1.5 text-xs",
-                  "bg-primary/10 border border-primary/20 hover:bg-primary/20 cursor-pointer",
-                  selectedAppointment === appointment.id && "ring-1 ring-primary",
-                )}
-                style={{
-                  top: `${startPosition}px`,
-                  height: `${duration}px`,
-                }}
-                onClick={() => setSelectedAppointment(selectedAppointment === appointment.id ? null : appointment.id)}
-              >
-                <div className="font-medium text-sm">{appointment.visitorName}</div>
-                <div className="text-xs text-muted-foreground">
-                  {appointment.startTime} - {appointment.endTime}
+  // Render loading skeleton
+  if (isLoading) {
+    return (
+      <div className="p-4 space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {Array(view === "day" ? 1 : view === "week" ? 7 : 30)
+            .fill(0)
+            .map((_, index) => (
+              <div key={index} className="border rounded-md p-3 space-y-2">
+                <Skeleton className="h-5 w-24" />
+                <div className="space-y-2">
+                  {Array(Math.floor(Math.random() * 3) + 1)
+                    .fill(0)
+                    .map((_, idx) => (
+                      <Skeleton key={idx} className="h-12 w-full" />
+                    ))}
                 </div>
-                {selectedAppointment === appointment.id && (
-                  <div className="mt-0.5 text-xs">
-                    <div>{appointment.purpose}</div>
-                    <div>{appointment.location}</div>
+              </div>
+            ))}
+        </div>
+      </div>
+    )
+  }
+
+  // Render calendar based on view
+  if (view === "day") {
+    const dayAppointments = getAppointmentsForDay(date)
+
+    return (
+      <div className="p-4">
+        <h3 className="text-sm font-medium mb-4">{format(date, "EEEE, MMMM d, yyyy")}</h3>
+        <div className="space-y-2">
+          {dayAppointments.length > 0 ? (
+            dayAppointments.map((appointment) => (
+              <div key={appointment.id} className="border rounded-md p-2 hover:bg-accent transition-colors">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="font-medium text-xs">{appointment.visitorName}</p>
+                    <p className="text-[10px] text-muted-foreground">with {appointment.hostName}</p>
                   </div>
+                  <div className="text-[10px] text-muted-foreground">
+                    {appointment.startTime} - {appointment.endTime}
+                  </div>
+                </div>
+                <div className="mt-1 text-[10px]">
+                  <p>{appointment.purpose}</p>
+                  <p className="text-muted-foreground">{appointment.location}</p>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="text-center text-xs text-muted-foreground py-4">No appointments scheduled for this day.</p>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  // Week or Month view
+  return (
+    <div className="p-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {calendarDays.map((day) => {
+          const dayAppointments = getAppointmentsForDay(day)
+          const isCurrentMonth = view === "month" ? isSameMonth(day, date) : true
+
+          return (
+            <div
+              key={day.toISOString()}
+              className={`border rounded-md overflow-hidden ${!isCurrentMonth ? "opacity-50" : ""} ${
+                isSameDay(day, new Date()) ? "border-primary" : ""
+              }`}
+            >
+              <div className="bg-muted/30 p-2 border-b">
+                <h4 className="text-xs font-medium">{format(day, "EEE, MMM d")}</h4>
+              </div>
+              <div className="p-2 space-y-1 max-h-[200px] overflow-y-auto">
+                {dayAppointments.length > 0 ? (
+                  dayAppointments.map((appointment) => (
+                    <div
+                      key={appointment.id}
+                      className="text-[10px] p-1 rounded bg-accent/50 hover:bg-accent transition-colors cursor-pointer"
+                    >
+                      <div className="flex justify-between">
+                        <span className="font-medium">{appointment.visitorName}</span>
+                        <span className="text-muted-foreground">{appointment.startTime}</span>
+                      </div>
+                      <p className="truncate">{appointment.purpose}</p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-center text-[10px] text-muted-foreground py-2">No appointments</p>
                 )}
               </div>
-            )
-          })}
-        </div>
-      </div>
-    </div>
-  )
-
-  // Render week view
-  const renderWeekView = () => (
-    <div className="flex flex-col">
-      <div className="grid grid-cols-7 border-b">
-        {weekDays.map((day, index) => (
-          <div
-            key={index}
-            className={cn(
-              "text-center py-1.5 font-medium text-sm",
-              isSameDay(day, new Date()) && "bg-muted rounded-t-md",
-            )}
-          >
-            <div>{format(day, "EEE")}</div>
-            <div className="text-xs">{format(day, "d")}</div>
-          </div>
-        ))}
-      </div>
-      <div className="grid grid-cols-[80px_1fr] h-[500px] overflow-auto">
-        <div className="border-r">
-          {timeSlots.map((time, index) => (
-            <div key={index} className="h-16 border-b p-1.5 text-xs text-muted-foreground">
-              {time}
             </div>
-          ))}
-        </div>
-        <div className="grid grid-cols-7">
-          {weekDays.map((day, dayIndex) => (
-            <div key={dayIndex} className="relative border-r">
-              {timeSlots.map((_, timeIndex) => (
-                <div key={timeIndex} className={cn("h-16 border-b", isSameDay(day, new Date()) && "bg-muted/50")}></div>
-              ))}
-
-              {getAppointmentsForDate(day).map((appointment) => {
-                // Calculate position based on start time
-                const [startHour, startMinute] = appointment.startTime.split(":").map(Number)
-                const [endHour, endMinute] = appointment.endTime.split(":").map(Number)
-
-                const startPosition = (startHour - 9) * 64 + (startMinute / 60) * 64
-                const duration = (((endHour - startHour) * 60 + (endMinute - startMinute)) / 60) * 64
-
-                return (
-                  <div
-                    key={appointment.id}
-                    className={cn(
-                      "absolute left-0.5 right-0.5 rounded-md p-1 text-xs",
-                      "bg-primary/10 border border-primary/20 hover:bg-primary/20 cursor-pointer",
-                      selectedAppointment === appointment.id && "ring-1 ring-primary",
-                    )}
-                    style={{
-                      top: `${startPosition}px`,
-                      height: `${duration}px`,
-                    }}
-                    onClick={() =>
-                      setSelectedAppointment(selectedAppointment === appointment.id ? null : appointment.id)
-                    }
-                  >
-                    <div className="font-medium text-sm truncate">{appointment.visitorName}</div>
-                    <div className="text-xs text-muted-foreground truncate">
-                      {appointment.startTime} - {appointment.endTime}
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          ))}
-        </div>
+          )
+        })}
       </div>
-    </div>
-  )
-
-  // Render month view
-  const renderMonthView = () => (
-    <div className="flex flex-col">
-      <div className="text-center py-1.5 font-medium border-b text-sm">{format(date, "MMMM yyyy")}</div>
-      <div className="grid grid-cols-7 h-[500px]">
-        {/* Month view implementation would go here */}
-        <div className="col-span-7 flex items-center justify-center h-full text-sm text-muted-foreground">
-          Month view coming soon
-        </div>
-      </div>
-    </div>
-  )
-
-  return (
-    <div className="bg-background">
-      {view === "day" && renderDayView()}
-      {view === "week" && renderWeekView()}
-      {view === "month" && renderMonthView()}
     </div>
   )
 }
