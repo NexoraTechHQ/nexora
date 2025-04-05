@@ -16,12 +16,38 @@ export function LoginForm() {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [rememberMe, setRememberMe] = useState(false)
-  const { login, isLoading, error, clearError } = useAuth()
+  const [localError, setLocalError] = useState<string | null>(null)
+  const [isLocalLoading, setIsLocalLoading] = useState(false)
+
+  // Try to use auth context, but provide fallbacks if it's not available
+  let authContext
+  let login: any, isLoading: any, error: any, clearError: any
+
+  try {
+    authContext = useAuth()
+    ;({ login, isLoading, error, clearError } = authContext)
+  } catch (e) {
+    authContext = null
+    login = async () => {
+      setIsLocalLoading(true)
+      // Simulate login for when auth context isn't available
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+      setIsLocalLoading(false)
+      setLocalError("Authentication service is not available. Please try again later.")
+    }
+    isLoading = isLocalLoading
+    error = localError
+    clearError = () => setLocalError(null)
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     await login({ username, password, rememberMe })
   }
+
+  const currentError = error || localError
+  const currentIsLoading = isLoading || isLocalLoading
+  const currentClearError = clearError || (() => setLocalError(null))
 
   return (
     <Card className="mx-auto max-w-md w-full shadow-md">
@@ -35,9 +61,9 @@ export function LoginForm() {
         <CardDescription className="text-sm">Enter your credentials to access your account</CardDescription>
       </CardHeader>
       <CardContent>
-        {error && (
+        {currentError && (
           <Alert variant="destructive" className="mb-4">
-            <AlertDescription className="text-sm">{error}</AlertDescription>
+            <AlertDescription className="text-sm">{currentError}</AlertDescription>
           </Alert>
         )}
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -52,7 +78,7 @@ export function LoginForm() {
               value={username}
               onChange={(e) => {
                 setUsername(e.target.value)
-                if (error) clearError()
+                if (currentError) currentClearError()
               }}
               className="h-9"
               required
@@ -73,7 +99,7 @@ export function LoginForm() {
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value)
-                if (error) clearError()
+                if (currentError) currentClearError()
               }}
               className="h-9"
               required
@@ -89,8 +115,8 @@ export function LoginForm() {
               Remember me for {rememberMe ? "1 week" : "1 day"}
             </Label>
           </div>
-          <Button type="submit" className="w-full h-10 text-sm" disabled={isLoading}>
-            {isLoading ? "Signing in..." : "Sign in"}
+          <Button type="submit" className="w-full h-10 text-sm" disabled={currentIsLoading}>
+            {currentIsLoading ? "Signing in..." : "Sign in"}
           </Button>
         </form>
       </CardContent>

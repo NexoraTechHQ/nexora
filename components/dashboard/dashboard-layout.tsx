@@ -4,11 +4,11 @@ import type React from "react"
 
 import { useState, useEffect } from "react"
 import { usePathname } from "next/navigation"
-import { AppSidebar } from "./app-sidebar"
 import { DashboardHeader } from "./dashboard-header"
 import { AIAssistant } from "../ai-assistant/ai-assistant"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
+import { AppSidebar } from "./app-sidebar"
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -27,7 +27,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       {/* Sidebar - always visible on desktop, controlled by state on mobile */}
       {isMobile ? (
         <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
-          <SheetContent side="left" className="p-0 w-[320px] max-w-full">
+          <SheetContent side="left" className="p-0 w-[240px] sm:max-w-[260px]">
             <div className="h-full overflow-hidden">
               <AppSidebar />
             </div>
